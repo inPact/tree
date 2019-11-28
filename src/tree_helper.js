@@ -127,15 +127,7 @@ module.exports = class TreeHelper {
 
 function toHashtable(array, key, projection) {
     return _.reduce(array, (table, item) => {
-        let propName;
-        if ((typeof key) === 'function')
-            propName = key(item);
-        else if ((typeof key) === 'string')
-            propName = item[key];
-        else
-            throw new Error('key must be a string or a function');
-
-        table[propName] = projection ? projection(item) : item;
+        table[item[key]] = projection ? projection(item) : item;
         return table;
     }, {});
 }
