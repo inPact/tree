@@ -5,7 +5,7 @@
     "lodash": "^4.17.15"
   },
   "name": "@tabit/tree",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "src/tree_helper.js",
   "directories": {
     "test": "test"
