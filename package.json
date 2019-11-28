@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "@tabit/utils": "3.1.0",
+    "chai": "^4.2.0",
+    "lodash": "^4.17.15"
+  },
+  "name": "tree",
+  "version": "1.0.0",
+  "main": "src/tree_helper.js",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "mocha": "^6.2.2"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inPact/tree.git"
+  },
+  "author": "joniba",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/inPact/tree/issues"
+  },
+  "homepage": "https://github.com/inPact/tree#readme",
+  "description": ""
+}
