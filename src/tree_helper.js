@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const utility = require('@tabit/utils');
 const TreeNodeLookupError = require('./tree_node_lookup_error');
 const RecursionGuard = require('./recursion_guard');
 
@@ -12,7 +11,7 @@ module.exports = class TreeHelper {
         this.entities = entities;
         this.idKey = idKey;
         this.parentKey = parentKey;
-        this.byId = utility.toHashtable(entities, this.idKey);
+        this.byId = toHashtable(entities, this.idKey);
         let recursionGuard = new RecursionGuard(idKey, parentKey, entities, this.byId);
         recursionGuard.validateTree();
     }
@@ -125,3 +124,18 @@ module.exports = class TreeHelper {
         return leafs;
     }
 };
+
+function toHashtable(array, key, projection) {
+    return _.reduce(array, (table, item) => {
+        let propName;
+        if ((typeof key) === 'function')
+            propName = key(item);
+        else if ((typeof key) === 'string')
+            propName = item[key];
+        else
+            throw new Error('key must be a string or a function');
+
+        table[propName] = projection ? projection(item) : item;
+        return table;
+    }, {});
+}

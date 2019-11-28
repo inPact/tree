@@ -5,7 +5,7 @@
     "lodash": "^4.17.15"
   },
   "name": "@tabit/tree",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "main": "src/tree_helper.js",
   "directories": {
     "test": "test"
@@ -26,5 +26,5 @@
     "url": "https://github.com/inPact/tree/issues"
   },
   "homepage": "https://github.com/inPact/tree#readme",
-  "description": ""
+  "description": "A simple utility that provides tree-like functions over an array of entities linked by a parent field."
 }
