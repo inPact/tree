@@ -1,5 +1,8 @@
 # release notes
 
+## 1.3.0
+* filterPaths: returns a new tree that contains full paths (ancestors and descendants) of matched nodes
+
 ## 1.2.0
 * filterLeaves: returns a new tree with only non-matching leaf-nodes filtered out
 

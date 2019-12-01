@@ -21,9 +21,9 @@ module.exports = class Tree {
      * @param node
      * @returns {*[]}
      */
-    selfAndAncestors(node) {
+    getAncestors(node) {
         node = this.getNode(node);
-        let result = [node];
+        let result = [];
 
         while (node && node[this.parentKey]) {
             node = this.byId[node[this.parentKey]];
@@ -34,13 +34,20 @@ module.exports = class Tree {
     }
 
     /**
-     * Returns an array containing the ids of the specified node and its descendant nodes.
+     * Returns an array containing the ids of the specified node and its ancestor nodes.
      * @param node
      * @returns {*[]}
      */
-    selfAndDescendants(node) {
+    selfAndAncestors(node) {
         node = this.getNode(node);
-        let result = [node];
+        let result = this.getAncestors(node);
+        result.unshift(node);
+        return result;
+    }
+
+    getDescendants(node) {
+        node = this.getNode(node);
+        let result = [];
         let children = this.children(node);
 
         while (children.length) {
@@ -48,6 +55,18 @@ module.exports = class Tree {
             children = _(children).map(child => this.children(child)).flatten().value();
         }
 
+        return result;
+    }
+
+    /**
+     * Returns an array containing the ids of the specified node and its descendant nodes.
+     * @param node
+     * @returns {*[]}
+     */
+    selfAndDescendants(node) {
+        node = this.getNode(node);
+        let result = this.getDescendants(node);
+        result.unshift(node);
         return result;
     }
 
@@ -113,7 +132,7 @@ module.exports = class Tree {
 
     getLeafNodes(node) {
         const nodes = node ? this.selfAndDescendants(node) : this.entities;
-        return this.filterNodes(nodes, node => this.isLeaf(node));
+        return this.filterNodes(node => this.isLeaf(node), nodes);
     }
 
     /**
@@ -122,15 +141,22 @@ module.exports = class Tree {
      * @param filter
      */
     filterLeaves(filter) {
-        let nodes = this.filterNodes(this.entities, node => {
+        let nodes = this.filterNodes(node => {
             let isLeaf = this.isLeaf(node);
             return !isLeaf || (isLeaf && !!filter(node));
-        });
+        }, this.entities);
 
         return new Tree(nodes);
     }
 
-    filterNodes(nodes, filter){
+    /**
+     *
+     * @param filter
+     * @param [nodes] - the node from which to start searching
+     * @returns {Array}
+     */
+    filterNodes(filter, nodes) {
+        nodes = nodes || this.entities;
         const matches = [];
         _.each(nodes, node => {
             if (!!filter(node))
@@ -139,7 +165,32 @@ module.exports = class Tree {
 
         return matches;
     }
+
+    filterPaths(filter) {
+        let matches = this._filterPaths(filter, this.entities);
+        return new Tree(matches);
+    }
+
+    /**
+     * @private
+     */
+    _filterPaths(filter, nodes) {
+        let matched = {};
+        _.each(nodes, node => {
+            let id = node[this.idKey];
+            if (matched[id])
+                return;
+
+            if (filter(node)) {
+                let matches = this.selfAndDescendants(node).concat(this.getAncestors(node));
+                _.assign(matched, toHashtable(matches, this.idKey));
+            }
+        });
+
+        return _.values(matched);
+    }
 };
+
 
 function toHashtable(array, key, projection) {
     return _.reduce(array, (table, item) => {
