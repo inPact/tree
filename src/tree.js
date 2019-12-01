@@ -167,16 +167,8 @@ module.exports = class Tree {
     }
 
     filterPaths(filter) {
-        let matches = this._filterPaths(filter, this.entities);
-        return new Tree(matches);
-    }
-
-    /**
-     * @private
-     */
-    _filterPaths(filter, nodes) {
         let matched = {};
-        _.each(nodes, node => {
+        _.each(this.entities, node => {
             let id = node[this.idKey];
             if (matched[id])
                 return;
@@ -187,7 +179,7 @@ module.exports = class Tree {
             }
         });
 
-        return _.values(matched);
+        return new Tree(_.values(matched));
     }
 };
 
