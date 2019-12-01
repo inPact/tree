@@ -1,1 +1,1 @@
-module.exports = require('./src/tree_helper');
+module.exports = require('./src/tree');

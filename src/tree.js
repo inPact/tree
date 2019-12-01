@@ -6,7 +6,7 @@ const RecursionGuard = require('./recursion_guard');
  * Provides tree-like query methods for a collection of entities with hierarchical relationships.
  * @type {TreeHelper}
  */
-module.exports = class TreeHelper {
+module.exports = class Tree {
     constructor(entities, { idKey = '_id', parentKey = 'parentId' } = {}) {
         this.entities = entities;
         this.idKey = idKey;
@@ -112,16 +112,32 @@ module.exports = class TreeHelper {
     }
 
     getLeafNodes(node) {
-        const leafs = [];
         const nodes = node ? this.selfAndDescendants(node) : this.entities;
+        return this.filterNodes(nodes, node => this.isLeaf(node));
+    }
 
-        _.each(nodes, node => {
-            if (this.isLeaf(node)) {
-                leafs.push(node);
-            }
+    /**
+     * Returns a new Tree that contains only leaf nodes in this tree that match {@param filter}, as well as
+     * all non-leaf nodes in this tree.
+     * @param filter
+     */
+    filterLeaves(filter) {
+        let nodes = this.filterNodes(this.entities, node => {
+            let isLeaf = this.isLeaf(node);
+            return !isLeaf || (isLeaf && !!filter(node));
         });
 
-        return leafs;
+        return new Tree(nodes);
+    }
+
+    filterNodes(nodes, filter){
+        const matches = [];
+        _.each(nodes, node => {
+            if (!!filter(node))
+                matches.push(node);
+        });
+
+        return matches;
     }
 };
 
