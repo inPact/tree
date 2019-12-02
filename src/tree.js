@@ -16,8 +16,13 @@ module.exports = class Tree {
         recursionGuard.validateTree();
     }
 
+    /** @private */
+    get _byParent() {
+        return this.byParent || (this.byParent = _.groupBy(this.entities, x => x[this.parentKey]));
+    }
+
     /**
-     * Returns an array containing the ids of the specified node and its ancestor nodes.
+     * Returns an array containing the ancestors of {@param node}.
      * @param node
      * @returns {*[]}
      */
@@ -34,7 +39,7 @@ module.exports = class Tree {
     }
 
     /**
-     * Returns an array containing the ids of the specified node and its ancestor nodes.
+     * Returns an array containing the {@param node} and its ancestor nodes.
      * @param node
      * @returns {*[]}
      */
@@ -45,6 +50,11 @@ module.exports = class Tree {
         return result;
     }
 
+    /**
+     * Returns an array containing the descendants of {@param node}.
+     * @param node
+     * @returns {Array}
+     */
     descendants(node) {
         node = this.getNode(node);
         let result = [];
@@ -59,7 +69,7 @@ module.exports = class Tree {
     }
 
     /**
-     * Returns an array containing the ids of the specified node and its descendant nodes.
+     * Returns an array containing {@param node} and its descendant nodes.
      * @param node
      * @returns {*[]}
      */
@@ -77,26 +87,44 @@ module.exports = class Tree {
         return _.last(this.selfAndAncestors(node));
     }
 
+    /**
+     * Returns the first root-level node found in the tree.
+     */
     get root() {
         return this.entities.find(entity => !entity[this.parentKey]);
     }
 
+    /**
+     * Returns all root-level nodes found in the tree.
+     */
     get roots() {
         return this.entities.filter(entity => !entity[this.parentKey]);
     }
 
-    get _byParent() {
-        return this.byParent || (this.byParent = _.groupBy(this.entities, x => x[this.parentKey]));
-    }
-
+    /**
+     * Returns all children of {@param node}.
+     * @param node
+     * @returns {*|Array}
+     */
     children(node) {
         return this._byParent[node[this.idKey] || node] || [];
     }
 
+    /**
+     * Returns true if {@param node} has any children, otherwise false.
+     * @param node
+     * @returns {boolean}
+     */
     hasChildren(node) {
         return this.children(node).length > 0;
     }
 
+    /**
+     * If {@param node} is not a node, looks up and returns the node in the tree whose idKey matches {@param node},
+     * otherwise returns {@param node}.
+     * @param node
+     * @returns {*}
+     */
     getNode(node) {
         let original = node;
         if (!node)
