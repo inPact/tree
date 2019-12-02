@@ -1,5 +1,8 @@
 # release notes
 
+## NEXT
+* filterPaths: fixed issue with the order in which nodes were matched which could cause some nodes to not be matched
+
 ## 1.3.0
 * filterPaths: returns a new tree that contains full paths (ancestors and descendants) of matched nodes
 
