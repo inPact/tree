@@ -21,7 +21,7 @@ module.exports = class Tree {
      * @param node
      * @returns {*[]}
      */
-    getAncestors(node) {
+    ancestors(node) {
         node = this.getNode(node);
         let result = [];
 
@@ -40,12 +40,12 @@ module.exports = class Tree {
      */
     selfAndAncestors(node) {
         node = this.getNode(node);
-        let result = this.getAncestors(node);
+        let result = this.ancestors(node);
         result.unshift(node);
         return result;
     }
 
-    getDescendants(node) {
+    descendants(node) {
         node = this.getNode(node);
         let result = [];
         let children = this.children(node);
@@ -65,7 +65,7 @@ module.exports = class Tree {
      */
     selfAndDescendants(node) {
         node = this.getNode(node);
-        let result = this.getDescendants(node);
+        let result = this.descendants(node);
         result.unshift(node);
         return result;
     }
@@ -166,17 +166,24 @@ module.exports = class Tree {
         return matches;
     }
 
-    filterPaths(filter) {
-        let matched = {};
-        _.each(this.entities, node => {
+    filterPaths(filter, nodes, matched = {}, matching = {}) {
+        nodes = nodes || this.roots;
+        _.each(nodes, node => {
             let id = node[this.idKey];
             if (matched[id])
                 return;
 
+            if (matching[id])
+                throw new Error('cyclic graph detected');
+
+            matching[id] = true;
             if (filter(node)) {
-                let matches = this.selfAndDescendants(node).concat(this.getAncestors(node));
+                let matches = this.selfAndDescendants(node).concat(this.ancestors(node));
                 _.assign(matched, toHashtable(matches, this.idKey));
-            }
+            } else
+                this.filterPaths(filter, this.children(node), matched, matching);
+
+            delete matching[id];
         });
 
         return new Tree(_.values(matched));
