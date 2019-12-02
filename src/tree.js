@@ -166,7 +166,21 @@ module.exports = class Tree {
         return matches;
     }
 
-    filterPaths(filter, nodes, matched = {}, matching = {}) {
+    /**
+     * Returns a new Tree that contains all nodes matching {@param filter},
+     * along with both the ancestors and the descendants of those matches,
+     * thereby maintaining the current structure of the tree but filtering out irrelevant sections.
+     * @param filter {Function} - a predicate that receives the node currently being iterated and returns
+     * a truthy value if that node (and its ancestor- and descendant-paths) should be included
+     * in the resulting tree.
+     * @returns {module.Tree}
+     */
+    filterPaths(filter) {
+        return this._filterPaths(filter);
+    }
+
+    /** @private */
+    _filterPaths(filter, nodes, matched = {}, matching = {}) {
         nodes = nodes || this.roots;
         _.each(nodes, node => {
             let id = node[this.idKey];
@@ -181,7 +195,7 @@ module.exports = class Tree {
                 let matches = this.selfAndDescendants(node).concat(this.ancestors(node));
                 _.assign(matched, toHashtable(matches, this.idKey));
             } else
-                this.filterPaths(filter, this.children(node), matched, matching);
+                this._filterPaths(filter, this.children(node), matched, matching);
 
             delete matching[id];
         });
@@ -190,10 +204,9 @@ module.exports = class Tree {
     }
 };
 
-
-function toHashtable(array, key, projection) {
+function toHashtable(array, key) {
     return _.reduce(array, (table, item) => {
-        table[item[key]] = projection ? projection(item) : item;
+        table[item[key]] = item;
         return table;
     }, {});
 }
