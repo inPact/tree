@@ -4,7 +4,7 @@ const RecursionGuard = require('./recursion_guard');
 
 /**
  * Provides tree-like query methods for a collection of entities with hierarchical relationships.
- * @type {TreeHelper}
+ * @type {Tree}
  */
 module.exports = class Tree {
     constructor(entities, { idKey = '_id', parentKey = 'parentId' } = {}) {
@@ -12,8 +12,8 @@ module.exports = class Tree {
         this.idKey = idKey;
         this.parentKey = parentKey;
         this.byId = toHashtable(entities, this.idKey);
-        let recursionGuard = new RecursionGuard(idKey, parentKey, entities, this.byId);
-        recursionGuard.validateTree();
+
+        new RecursionGuard(idKey, parentKey, entities, this.byId).validateTree();
     }
 
     /** @private */
