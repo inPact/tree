@@ -1,6 +1,6 @@
 # release notes
 
-## NEXT
+## 1.4.0
 * filterPaths: fixed issue with the order in which nodes were matched which could cause some nodes to not be matched
 
 ## 1.3.0
