@@ -1,5 +1,8 @@
 # release notes
 
+## 1.5.0
+* getTopLevelNodes: returns all nodes in the tree with no parent or with parents that do not exist in the current tree
+
 ### 1.4.1
 * cleanup, documentation
 
