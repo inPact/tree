@@ -164,6 +164,16 @@ module.exports = class Tree {
     }
 
     /**
+     * Returns all top-level nodes in the current tree structure. Top-level nodes will always be root nodes
+     * given a fully populated tree. In a tree that is missing some nodes, top-level nodes might not be
+     * root nodes. I.e., a node is considered top-level if there it has no parent **in the current tree**
+     * (even if it references a parent by ID).
+     */
+    getTopLevelNodes() {
+        return this.entities.filter(entity => !entity[this.parentKey] || !this.byId[entity[this.parentKey]]);
+    }
+
+    /**
      * Returns a new Tree that contains only leaf nodes in this tree that match {@param filter}, as well as
      * all non-leaf nodes in this tree.
      * @param filter

@@ -76,6 +76,71 @@ describe('Tree should: ', function () {
 
     });
 
+    it('Get top-level nodes regardless of whether or not tree has root nodes', async function () {
+        // with root nodes
+        let nodes = tree.getTopLevelNodes();
+        nodes.should.deep.equal([
+            { _id: 'A', name: 'A HQ' },
+            { _id: 'B', name: 'B HQ' },
+        ]);
+
+        // no root nodes
+        tree = new Tree([
+            { _id: 'A1', parentId: 'A', name: 'A region 1' },
+            { _id: 'A1a', parentId: 'A1', name: 'A1 leaf 1' },
+            { _id: 'A1b', parentId: 'A1', name: 'A1 leaf 2' },
+
+            { _id: 'A2', parentId: 'A', name: 'A region 2' },
+            { _id: 'A2a', parentId: 'A2', name: 'A2 leaf 1' },
+            { _id: 'A2b', parentId: 'A2', name: 'A2 leaf 2' },
+
+            { _id: 'B1', parentId: 'B', name: 'B region 1' },
+            { _id: 'B1a', parentId: 'B1', name: 'B1 leaf 1' },
+            { _id: 'B1b', parentId: 'B1', name: 'B1 leaf 2' },
+
+            { _id: 'B2', parentId: 'B', name: 'B region 2' },
+            { _id: 'B2a', parentId: 'B2', name: 'B2 leaf 1' },
+            { _id: 'B2b', parentId: 'B2', name: 'B2 leaf 2' },
+        ]);
+
+        nodes = tree.getTopLevelNodes();
+        nodes.should.deep.equal([
+            { _id: 'A1', parentId: 'A', name: 'A region 1' },
+            { _id: 'A2', parentId: 'A', name: 'A region 2' },
+            { _id: 'B1', parentId: 'B', name: 'B region 1' },
+            { _id: 'B2', parentId: 'B', name: 'B region 2' },
+        ]);
+
+        // only leaf nodes
+        tree = new Tree([
+            { _id: 'A1a', parentId: 'A1', name: 'A1 leaf 1' },
+            { _id: 'A1b', parentId: 'A1', name: 'A1 leaf 2' },
+
+            { _id: 'A2a', parentId: 'A2', name: 'A2 leaf 1' },
+            { _id: 'A2b', parentId: 'A2', name: 'A2 leaf 2' },
+
+            { _id: 'B1a', parentId: 'B1', name: 'B1 leaf 1' },
+            { _id: 'B1b', parentId: 'B1', name: 'B1 leaf 2' },
+
+            { _id: 'B2a', parentId: 'B2', name: 'B2 leaf 1' },
+            { _id: 'B2b', parentId: 'B2', name: 'B2 leaf 2' },
+        ]);
+        nodes = tree.getTopLevelNodes();
+        nodes.should.deep.equal([
+            { _id: 'A1a', parentId: 'A1', name: 'A1 leaf 1' },
+            { _id: 'A1b', parentId: 'A1', name: 'A1 leaf 2' },
+
+            { _id: 'A2a', parentId: 'A2', name: 'A2 leaf 1' },
+            { _id: 'A2b', parentId: 'A2', name: 'A2 leaf 2' },
+
+            { _id: 'B1a', parentId: 'B1', name: 'B1 leaf 1' },
+            { _id: 'B1b', parentId: 'B1', name: 'B1 leaf 2' },
+
+            { _id: 'B2a', parentId: 'B2', name: 'B2 leaf 1' },
+            { _id: 'B2b', parentId: 'B2', name: 'B2 leaf 2' },
+        ])
+    });
+
     describe('filterPaths should: ', function () {
         it('Filter descendants-and-ancestor paths', async function () {
             let filteredTree = tree.filterPaths(node => node.name.indexOf('region 2') > 1);
