@@ -141,6 +141,17 @@ describe('Tree should: ', function () {
         ])
     });
 
+    it('Allow incomplete trees that do not fail when nodes are missing', async function () {
+        tree = new Tree([{ _id: 'A1a', parentId: 'A1', name: 'A1 leaf 1' }], { validateNodes: false });
+        should.not.throw(() => tree.getParent('A1a'));
+        should.not.exist(tree.getParent('A1a'));
+    });
+
+    it('Fail when node does not exist in a complete tree', async function () {
+        tree = new Tree([{ _id: 'A1a', parentId: 'A1', name: 'A1 leaf 1' }]);
+        should.throw(() => tree.getParent('A1a'));
+    });
+
     describe('filterPaths should: ', function () {
         it('Filter descendants-and-ancestor paths', async function () {
             let filteredTree = tree.filterPaths(node => node.name.indexOf('region 2') > 1);

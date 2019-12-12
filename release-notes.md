@@ -1,5 +1,8 @@
 # release notes
 
+## 1.6.0
+* allow incomplete tree that doesn't throw lookup-errors by creating tree with validatesNodes=false
+
 ## 1.5.0
 * getTopLevelNodes: returns all nodes in the tree with no parent or with parents that do not exist in the current tree
 

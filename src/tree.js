@@ -7,11 +7,20 @@ const RecursionGuard = require('./recursion_guard');
  * @type {Tree}
  */
 module.exports = class Tree {
-    constructor(entities, { idKey = '_id', parentKey = 'parentId' } = {}) {
+    /**
+     *
+     * @param entities
+     * @param idKey
+     * @param parentKey
+     * @param validateNodes {Boolean} - when false, the tree will return undefined when a node is not found;
+     * defaults to true: throw errors if a requested node does not exist.
+     */
+    constructor(entities, { idKey = '_id', parentKey = 'parentId', validateNodes = true } = {}) {
         this.entities = entities;
         this.idKey = idKey;
         this.parentKey = parentKey;
         this.byId = toHashtable(entities, this.idKey);
+        this.validateNodes = validateNodes;
 
         new RecursionGuard(idKey, parentKey, entities, this.byId).validateTree();
     }
@@ -128,15 +137,21 @@ module.exports = class Tree {
     getNode(node) {
         let original = node;
         if (!node)
-            throw new TreeNodeLookupError('Tree: no node specified or node is null or undefined');
+            return this._nodeNotFound();
 
         if (!node[this.idKey])
             node = this.byId[node];
 
         if (!node)
-            throw new TreeNodeLookupError(`Tree: node ${original} does not exist in the current tree`);
+            return this._nodeNotFound(original);
 
         return node;
+    }
+
+    /** @private */
+    _nodeNotFound(node) {
+        if (this.validateNodes)
+            throw new TreeNodeLookupError(`Tree: no node specified or node is null or undefined ${node ? `(node: ${node})` : ''}`);
     }
 
     getById(id) {
