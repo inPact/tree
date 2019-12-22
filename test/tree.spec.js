@@ -145,11 +145,39 @@ describe('Tree should: ', function () {
         tree = new Tree([{ _id: 'A1a', parentId: 'A1', name: 'A1 leaf 1' }], { validateNodes: false });
         should.not.throw(() => tree.getParent('A1a'));
         should.not.exist(tree.getParent('A1a'));
+
+        should.not.throw(() => tree.children('Stam'));
+        tree.children('Stam').should.deep.equal([]);
+
+        should.not.throw(() => tree.selfAndDescendants('Stam'));
+        tree.selfAndDescendants('Stam').should.deep.equal([]);
+
+        should.not.throw(() => tree.ancestors('Stam'));
+        tree.ancestors('Stam').should.deep.equal([]);
+
+        should.not.throw(() => tree.selfAndAncestors('Stam'));
+        tree.selfAndAncestors('Stam').should.deep.equal([]);
+
+        should.not.throw(() => tree.getLeafNodes('Stam'));
+        tree.getLeafNodes('Stam').should.deep.equal([]);
     });
 
     it('Fail when node does not exist in a complete tree', async function () {
         tree = new Tree([{ _id: 'A1a', parentId: 'A1', name: 'A1 leaf 1' }]);
         should.throw(() => tree.getParent('A1a'));
+        should.throw(() => tree.selfAndDescendants('Stam'));
+        should.throw(() => tree.ancestors('Stam'));
+        should.throw(() => tree.selfAndAncestors('Stam'));
+        should.throw(() => tree.getLeafNodes('Stam'));
+    });
+
+    it('Clone tree', async function () {
+        let clone = tree.clone();
+        clone.entities.should.deep.equal(tree.entities);
+        clone.idKey.should.equal(tree.idKey);
+        clone.parentKey.should.equal(tree.parentKey);
+        clone.byId.should.equal(tree.byId);
+        clone.validateNodes.should.equal(tree.validateNodes);
     });
 
     describe('filterPaths should: ', function () {

@@ -54,6 +54,9 @@ module.exports = class Tree {
      */
     selfAndAncestors(node) {
         node = this.getNode(node);
+        if (!node)
+            return this._nodeNotFound({ defaultValue: [] });
+
         let result = this.ancestors(node);
         result.unshift(node);
         return result;
@@ -84,6 +87,9 @@ module.exports = class Tree {
      */
     selfAndDescendants(node) {
         node = this.getNode(node);
+        if (!node)
+            return this._nodeNotFound({ defaultValue: [] });
+
         let result = this.descendants(node);
         result.unshift(node);
         return result;
@@ -116,6 +122,9 @@ module.exports = class Tree {
      * @returns {*|Array}
      */
     children(node) {
+        if (!node)
+            return this._nodeNotFound({ defaultValue: [] });
+
         return this._byParent[node[this.idKey] || node] || [];
     }
 
@@ -143,15 +152,17 @@ module.exports = class Tree {
             node = this.byId[node];
 
         if (!node)
-            return this._nodeNotFound(original);
+            return this._nodeNotFound({ node: original });
 
         return node;
     }
 
     /** @private */
-    _nodeNotFound(node) {
+    _nodeNotFound({ defaultValue, node } = {}) {
         if (this.validateNodes)
             throw new TreeNodeLookupError(`Tree: no node specified or node is null or undefined ${node ? `(node: ${node})` : ''}`);
+
+        return defaultValue;
     }
 
     getById(id) {
@@ -254,6 +265,21 @@ module.exports = class Tree {
         });
 
         return new Tree(_.values(matched));
+    }
+
+    /**
+     * Creates a new, identical tree from this tree, skipping recursion checks and other processing.
+     * @returns {module.Tree}
+     */
+    clone() {
+        const tree = new Tree();
+        tree.entities = this.entities;
+        tree.idKey = this.idKey;
+        tree.parentKey = this.parentKey;
+        tree.byId = this.byId;
+        tree.validateNodes = this.validateNodes;
+
+        return tree;
     }
 };
 

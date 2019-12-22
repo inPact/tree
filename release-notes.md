@@ -1,5 +1,8 @@
 # release notes
 
+## 1.7.0
+* protect against non-existant nodes when validatesNodes is false; added clone method
+
 ### 1.6.1
 * support incomplete trees in filterPaths
 
