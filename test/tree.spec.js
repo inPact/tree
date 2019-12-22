@@ -208,5 +208,32 @@ describe('Tree should: ', function () {
                 { _id: 'A2b', parentId: 'A2', name: 'A2 leaf Q' },
             ], '_id'))
         });
+
+        it('Filter descendants on incomplete trees', async function () {
+            tree = new Tree([
+                { _id: 'A1', parentId: 'A', name: 'A region 1' },
+                { _id: 'A1a', parentId: 'A1', name: 'A1 leaf 1' },
+                { _id: 'A1b', parentId: 'A1', name: 'A1 leaf 2' },
+
+                { _id: 'A2a', parentId: 'A2', name: 'A2 leaf 1' },
+                { _id: 'A2b', parentId: 'A2', name: 'A2 leaf 2' },
+
+                { _id: 'B1', parentId: 'B', name: 'B region 1' },
+                { _id: 'B1a', parentId: 'B1', name: 'B1 leaf 1' },
+                { _id: 'B1b', parentId: 'B1', name: 'B1 leaf 2' },
+            ]);
+
+            let filteredTree = tree.filterPaths(node => node.name.indexOf('leaf 1') > 1);
+            let sortedResult = _.sortBy(filteredTree.entities, '_id');
+            sortedResult.should.deep.equal(_.sortBy([
+                { _id: 'A1', parentId: 'A', name: 'A region 1' },
+                { _id: 'A1a', parentId: 'A1', name: 'A1 leaf 1' },
+
+                { _id: 'A2a', parentId: 'A2', name: 'A2 leaf 1' },
+
+                { _id: 'B1', parentId: 'B', name: 'B region 1' },
+                { _id: 'B1a', parentId: 'B1', name: 'B1 leaf 1' },
+            ], '_id'))
+        });
     })
 });

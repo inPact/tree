@@ -234,7 +234,7 @@ module.exports = class Tree {
 
     /** @private */
     _filterPaths(filter, nodes, matched = {}, matching = {}) {
-        nodes = nodes || this.roots;
+        nodes = nodes || this.getTopLevelNodes();
         _.each(nodes, node => {
             let id = node[this.idKey];
             if (matched[id])

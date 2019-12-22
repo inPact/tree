@@ -1,5 +1,8 @@
 # release notes
 
+### 1.6.1
+* support incomplete trees in filterPaths
+
 ## 1.6.0
 * allow incomplete tree that doesn't throw lookup-errors by creating tree with validatesNodes=false
 
