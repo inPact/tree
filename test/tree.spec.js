@@ -180,6 +180,51 @@ describe('Tree should: ', function () {
         clone.validateNodes.should.equal(tree.validateNodes);
     });
 
+    it('Embed node levels', async function () {
+        tree = new Tree([
+            { _id: 'A', name: 'A HQ' },
+            { _id: 'A1', parentId: 'A', name: 'A region 1' },
+            { _id: 'A1a', parentId: 'A1', name: 'A1 leaf 1' },
+            { _id: 'A1b', parentId: 'A1', name: 'A1 leaf 2' },
+
+            { _id: 'A2', parentId: 'A', name: 'A region 2' },
+            { _id: 'A2a', parentId: 'A2', name: 'A2 leaf 1' },
+            { _id: 'A2b', parentId: 'A2', name: 'A2 leaf 2' },
+
+            { _id: 'B', name: 'B HQ' },
+            { _id: 'B1', parentId: 'B', name: 'B region 1' },
+            { _id: 'B1a', parentId: 'B1', name: 'B1 leaf 1' },
+            { _id: 'B1b', parentId: 'B1', name: 'B1 leaf 2' },
+
+            { _id: 'B2', parentId: 'B', name: 'B region 2' },
+            { _id: 'B2a', parentId: 'B2', name: 'B2 leaf 1' },
+            { _id: 'B2b', parentId: 'B2', name: 'B2 leaf 2' },
+        ], {
+            embedLevels: true
+        });
+
+        let sortedResult = _.sortBy(tree.entities, '_id');
+        sortedResult.should.deep.equal(_.sortBy([
+            { _id: 'A', name: 'A HQ', level: 0 },
+            { _id: 'A1', parentId: 'A', name: 'A region 1', level: 1 },
+            { _id: 'A1a', parentId: 'A1', name: 'A1 leaf 1', level: 2 },
+            { _id: 'A1b', parentId: 'A1', name: 'A1 leaf 2', level: 2 },
+
+            { _id: 'A2', parentId: 'A', name: 'A region 2', level: 1 },
+            { _id: 'A2a', parentId: 'A2', name: 'A2 leaf 1', level: 2 },
+            { _id: 'A2b', parentId: 'A2', name: 'A2 leaf 2', level: 2 },
+
+            { _id: 'B', name: 'B HQ', level: 0 },
+            { _id: 'B1', parentId: 'B', name: 'B region 1', level: 1 },
+            { _id: 'B1a', parentId: 'B1', name: 'B1 leaf 1', level: 2 },
+            { _id: 'B1b', parentId: 'B1', name: 'B1 leaf 2', level: 2 },
+
+            { _id: 'B2', parentId: 'B', name: 'B region 2', level: 1 },
+            { _id: 'B2a', parentId: 'B2', name: 'B2 leaf 1', level: 2 },
+            { _id: 'B2b', parentId: 'B2', name: 'B2 leaf 2', level: 2 },
+        ], '_id'))
+    });
+
     describe('filterPaths should: ', function () {
         it('Filter descendants-and-ancestor paths', async function () {
             let filteredTree = tree.filterPaths(node => node.name.indexOf('region 2') > 1);

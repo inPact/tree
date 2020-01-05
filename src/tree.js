@@ -14,8 +14,10 @@ module.exports = class Tree {
      * @param parentKey
      * @param validateNodes {Boolean} - when false, the tree will return undefined when a node is not found;
      * defaults to true: throw errors if a requested node does not exist.
+     * @param embedLevels {Boolean} - when true, a "level" field will be added to each node in the tree,
+     * where roots are given level 0, their children level 1, etc.
      */
-    constructor(entities, { idKey = '_id', parentKey = 'parentId', validateNodes = true } = {}) {
+    constructor(entities, { idKey = '_id', parentKey = 'parentId', validateNodes = true, embedLevels = false } = {}) {
         this.entities = entities;
         this.idKey = idKey;
         this.parentKey = parentKey;
@@ -23,6 +25,9 @@ module.exports = class Tree {
         this.validateNodes = validateNodes;
 
         new RecursionGuard(idKey, parentKey, entities, this.byId).validateTree();
+
+        if (embedLevels)
+            this._embedLevels();
     }
 
     /** @private */
@@ -273,6 +278,8 @@ module.exports = class Tree {
      */
     clone() {
         const tree = new Tree();
+
+        // circumvent recalculations
         tree.entities = this.entities;
         tree.idKey = this.idKey;
         tree.parentKey = this.parentKey;
@@ -280,6 +287,15 @@ module.exports = class Tree {
         tree.validateNodes = this.validateNodes;
 
         return tree;
+    }
+
+    /** @private */
+    _embedLevels(nodes, level = 0) {
+        nodes = nodes || this.getTopLevelNodes();
+        _.each(nodes, node => {
+            node.level = level;
+            this._embedLevels(this.children(node), level + 1);
+        });
     }
 };
 

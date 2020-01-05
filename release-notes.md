@@ -1,5 +1,8 @@
 # release notes
 
+## 1.8.0
+* support for embedding node levels directly on nodes in the tree
+
 ## 1.7.0
 * protect against non-existant nodes when validatesNodes is false; added clone method
 
