@@ -14,10 +14,11 @@ module.exports = class Tree {
      * @param parentKey
      * @param validateNodes {Boolean} - when false, the tree will return undefined when a node is not found;
      * defaults to true: throw errors if a requested node does not exist.
-     * @param embedLevels {Boolean} - when true, a "level" field will be added to each node in the tree,
+     * @param embedLevels {Boolean} - DEPRECATED: use {@param addMeta} instead.
+     * When true, a "level" field will be added to each node in the tree,
      * where roots are given level 0, their children level 1, etc.
      */
-    constructor(entities, { idKey = '_id', parentKey = 'parentId', validateNodes = true, embedLevels = false } = {}) {
+    constructor(entities, { idKey = '_id', parentKey = 'parentId', validateNodes = true, embedLevels = false, addMeta } = {}) {
         this.entities = entities;
         this.idKey = idKey;
         this.parentKey = parentKey;
@@ -28,6 +29,8 @@ module.exports = class Tree {
 
         if (embedLevels)
             this._embedLevels();
+        else if (addMeta)
+            this.addMeta(addMeta);
     }
 
     /** @private */
@@ -295,6 +298,15 @@ module.exports = class Tree {
         _.each(nodes, node => {
             node.level = level;
             this._embedLevels(this.children(node), level + 1);
+        });
+    }
+
+    addMeta(meta = {}, nodes, level = 0) {
+        nodes = nodes || this.getTopLevelNodes();
+        _.each(nodes, node => {
+            _.set(node, 'meta.level', level);
+            _.each(meta, (val, key) => _.set(node, `meta.${key}`, this[key](node)));
+            this.addMeta(meta, this.children(node), level + 1);
         });
     }
 };

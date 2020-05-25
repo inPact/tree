@@ -1,5 +1,8 @@
 # release notes
 
+## 1.9.0
+* added support for embedding arbitrary metadata directly on nodes in the tree
+
 ## 1.8.0
 * support for embedding node levels directly on nodes in the tree
 
